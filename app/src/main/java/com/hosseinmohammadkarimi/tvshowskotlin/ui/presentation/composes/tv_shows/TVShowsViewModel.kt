@@ -1,4 +1,4 @@
-package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tvShows
+package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tv_shows
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -25,15 +25,26 @@ class TVShowsViewModel @Inject constructor(
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
-    private val error = mutableStateOf("")
     private val currentPage = mutableStateOf(1)
-    private var lastPage = currentPage.value
+    private val lastPage = currentPage
+    private val localTVShows = mutableStateOf<List<TVShow>>(emptyList())
 
     private val _uiEvent = MutableSharedFlow<UIEvents>()
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        getTVShows()
+        viewModelScope.launch {
+            getLocalTVShows()
+            getTVShows()
+        }
+    }
+
+    private fun getLocalTVShows() {
+        viewModelScope.launch {
+            repository.getLocalTVShows().collect {
+                localTVShows.value = it
+            }
+        }
     }
 
     private fun getTVShows() {
@@ -42,15 +53,16 @@ class TVShowsViewModel @Inject constructor(
             when (val result = repository.getTVShows(currentPage.value)) {
                 is Resources.Success -> {
                     _tvShows.value += result.data?.tvShows!!
-                    error.value = ""
                     _isLoading.value = false
                 }
 
                 is Resources.Error -> {
-                    error.value = result.message!!
                     _isLoading.value = false
-                    currentPage.value = lastPage
-                    _uiEvent.emit(UIEvents.ShowSnackbar(message = error.value))
+                    currentPage.value = lastPage.value
+                    _uiEvent.emit(UIEvents.ShowSnackbar(
+                        message = result.message!!,
+                        actionLabel = "تلاش مجدد"
+                    ))
                 }
             }
         }
@@ -62,14 +74,34 @@ class TVShowsViewModel @Inject constructor(
 
     fun loadMore() {
         currentPage.value++
-        lastPage = currentPage.value
+        lastPage.value = currentPage.value
         getTVShows()
     }
 
-    fun onEvent(event: TVShowsEvent) {
-        when (event) {
-            is TVShowsEvent.OnTVShowItemClick -> {
+    suspend fun insertTVShowIntoLocal(tvShows: TVShow) {
+        repository.insertTVShowIntoLocal(tvShows)
+        _uiEvent.emit(
+            UIEvents.ShowSnackbar(
+                message = "به لیست علاقمندی ها اضافه شد"
+            )
+        )
+    }
+
+    suspend fun deleteTVShowFromLocal(tvShows: TVShow) {
+        repository.deleteTVShowFromLocal(tvShows)
+        _uiEvent.emit(
+            UIEvents.ShowSnackbar(
+                message = "از لیست علاقمندی ها حذف شد"
+            )
+        )
+    }
+
+    fun isTVShowMarked(tvShow: TVShow): Boolean {
+        localTVShows.value.forEach(
+            action = {
+                if (it == tvShow) return true
             }
-        }
+        )
+        return false
     }
 }

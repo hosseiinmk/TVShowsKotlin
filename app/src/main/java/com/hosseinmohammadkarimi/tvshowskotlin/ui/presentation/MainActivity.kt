@@ -6,12 +6,19 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tv_show_details.TVShowDetailsScreen
+import com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tv_shows.TVShowsScreen
+import com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.watch_list.TVShowsWatchList
 import com.hosseinmohammadkarimi.tvshowskotlin.ui.theme.TVShowsKotlinTheme
-import com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.tvshows.TVShowsListScreen
+import com.hosseinmohammadkarimi.tvshowskotlin.utilities.Constants.TV_SHOWS
+import com.hosseinmohammadkarimi.tvshowskotlin.utilities.Constants.TV_SHOW_DETAILS
+import com.hosseinmohammadkarimi.tvshowskotlin.utilities.Constants.WATCH_LIST
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,12 +27,33 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TVShowsKotlinTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TVShowsListScreen()
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = TV_SHOWS
+                    ) {
+                        composable(route = TV_SHOWS) {
+                            TVShowsScreen(navController = navController)
+                        }
+                        composable(
+                            route = "$TV_SHOW_DETAILS/{tvShowId}",
+                            arguments = listOf(
+                                navArgument(name = "tvShowId") {
+                                    type = NavType.IntType
+                                    defaultValue = -1
+                                }
+                            )
+                        ) {
+                            TVShowDetailsScreen(navController = navController)
+                        }
+                        composable(route = WATCH_LIST) {
+                            TVShowsWatchList(navController = navController)
+                        }
+                    }
                 }
             }
         }

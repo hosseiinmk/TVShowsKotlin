@@ -1,4 +1,4 @@
-package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tvShows
+package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tv_shows
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,22 +27,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.hosseinmohammadkarimi.tvshowskotlin.R
 import com.hosseinmohammadkarimi.tvshowskotlin.utilities.Constants.WATCH_LIST
 import com.hosseinmohammadkarimi.tvshowskotlin.utilities.UIEvents
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TVShowsScreen(
     navController: NavController,
-    viewModel: TVShowsViewModel = viewModel()
+    viewModel: TVShowsViewModel = hiltViewModel()
 ) {
     val tvShows by remember { viewModel.tvShows }
     val isLoading by remember { viewModel.isLoading }
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(snackbarHostState) {
         viewModel.uiEvent.collectLatest { event ->
@@ -97,7 +100,15 @@ fun TVShowsScreen(
                 ) {
                     items(tvShows.size) { position ->
                         TVShowItem(
-                            tvShow = tvShows[position]
+                            navController = navController,
+                            tvShow = tvShows[position],
+                            onMarkButtonClick = {
+                                coroutineScope.launch {
+                                    if (it) viewModel.deleteTVShowFromLocal(tvShows[position])
+                                    else viewModel.insertTVShowIntoLocal(tvShows[position])
+                                }
+                            },
+                            isMarked = viewModel.isTVShowMarked(tvShows[position])
                         )
                     }
                     item {
@@ -128,4 +139,3 @@ fun TVShowsScreen(
         }
     }
 }
-
