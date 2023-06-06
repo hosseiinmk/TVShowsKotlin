@@ -1,6 +1,5 @@
 package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.watch_list
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +43,7 @@ fun TVShowsWatchList(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(snackbarHostState) {
+    LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collectLatest { event ->
             when (event) {
                 is UIEvents.ShowSnackbar -> {
@@ -78,8 +76,7 @@ fun TVShowsWatchList(
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
-                    colorResource(id = R.color.light_blue),
-                    Color.Green
+                    colorResource(id = R.color.light_blue)
                 )
             )
         },

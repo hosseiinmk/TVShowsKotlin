@@ -1,14 +1,9 @@
 package com.hosseinmohammadkarimi.tvshowskotlin.ui.presentation.composes.tv_show_details
 
-import android.widget.ScrollView
-import android.widget.Scroller
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,13 +62,18 @@ fun TVShowDetailsScreen(
                         message = event.message,
                         withDismissAction = true,
                         actionLabel = event.actionLabel
-                    )
+                    ).let {
+                        if (it == SnackbarResult.ActionPerformed) {
+                            viewModel.reloadTVShowDetails()
+                        }
+                    }
                 }
             }
         }
     }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         ConstraintLayout(
@@ -80,6 +81,7 @@ fun TVShowDetailsScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .background(DarkBlue)
+                .verticalScroll(state = rememberScrollState(0))
         ) {
             val (pager, thumbnail, name, startDate, status, description, btnBack) = createRefs()
             HorizontalPager(
@@ -137,14 +139,12 @@ fun TVShowDetailsScreen(
             Text(
                 text = tvShowDetails.description,
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState(0))
+                    .padding(bottom = 16.dp)
                     .constrainAs(description) {
                         top.linkTo(thumbnail.bottom, 16.dp)
                         start.linkTo(parent.start, 8.dp)
                         end.linkTo(parent.end, 8.dp)
-                        bottom.linkTo(parent.bottom, 8.dp)
                         width = Dimension.fillToConstraints
-                        height= Dimension.fillToConstraints
                     },
                 color = Color.White
             )

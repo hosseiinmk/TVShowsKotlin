@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class TVShowDetailsViewModel @Inject constructor(
@@ -29,9 +28,12 @@ class TVShowDetailsViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UIEvents>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private var tvShowId = -1
+
     init {
         savedStateHandle.get<Int>("tvShowId")?.let {
             Log.d("tvShowDetails", "tvShowId: $it")
+            tvShowId = it
             getTVShowDetails(it)
         }
     }
@@ -45,11 +47,16 @@ class TVShowDetailsViewModel @Inject constructor(
                 is Resources.Error -> {
                     _uiEvent.emit(
                         UIEvents.ShowSnackbar(
-                            message = result.message!!
+                            message = result.message!!,
+                            actionLabel = "تلاش مجدد"
                         )
                     )
                 }
             }
         }
+    }
+
+    fun reloadTVShowDetails() {
+        getTVShowDetails(tvShowId)
     }
 }
