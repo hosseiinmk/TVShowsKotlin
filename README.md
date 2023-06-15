@@ -1,7 +1,7 @@
 This application created by following features:
 
-1- Kotlin Language
-2- Coroutine
+• Kotlin Language
+• Coroutine
 3- Flow
 4- JetPack Compose
 5- Hilt Navigation Compose
