@@ -1,13 +1,20 @@
 This application created by following features:
 
 • Kotlin Language
+
 • Coroutine
-3- Flow
-4- JetPack Compose
-5- Hilt Navigation Compose
-6- View Model
-7- Dagger-Hilt
-8- Room Database
+
+• Flow
+
+• JetPack Compose
+
+• Hilt Navigation Compose
+
+• View Model
+
+• Dagger-Hilt
+
+• Room Database
 
 And following libraries:
 
