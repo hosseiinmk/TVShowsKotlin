@@ -17,5 +17,7 @@ This application created by following features:
     • Navigation Compose
     
     • Constraint Layout
+
+    • Coil
     
     • MVVM Architecture
