@@ -14,7 +14,7 @@ This application created by following features:
   
     • Room Database
 
-    • Navigation
+    • Navigation Compose
     
     • Constraint Layout
     
