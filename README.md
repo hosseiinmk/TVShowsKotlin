@@ -15,5 +15,7 @@ This application created by following features:
     • Room Database
 
     • Navigation
-
+    
+    • Constraint Layout
+    
     • MVVM Architecture
