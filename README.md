@@ -2,7 +2,7 @@ This application created by following features:
 
     • Kotlin Language
 
-    • Coroutine Flow
+    • Coroutines Flow
   
     • JetPack Compose
   
